@@ -10,11 +10,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Injects the Analyse SDK script tag into wp_head.
+ * Enqueues the bundled Analyse SDK on the site front-end.
  */
 class Analyse_Snippet {
 
-	const SDK_SRC = 'https://unpkg.com/@analyse.net/sdk@0/dist/index.global.js';
+	const HANDLE = 'analyse-sdk';
 
 	/**
 	 * Singleton instance.
@@ -37,37 +37,54 @@ class Analyse_Snippet {
 	}
 
 	/**
-	 * Hooks the snippet output.
+	 * Hooks the script enqueue and tag filter.
 	 */
 	public function register() {
-		add_action( 'wp_head', array( $this, 'output_snippet' ), 20 );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_snippet' ) );
+		add_filter( 'script_loader_tag', array( $this, 'add_data_attributes' ), 10, 2 );
 	}
 
 	/**
-	 * Prints the SDK script tag when tracking applies to this request.
+	 * Enqueues the SDK when tracking applies to this request.
 	 */
-	public function output_snippet() {
+	public function enqueue_snippet() {
 		if ( ! $this->should_track() ) {
 			return;
 		}
 
-		$public_key = Analyse_Settings::get( 'public_key' );
-		$pulse_host = Analyse_Settings::get( 'pulse_host' );
-
 		/**
-		 * Filters the SDK script URL, e.g. to self-host the tracker.
+		 * Filters the SDK script URL, e.g. to serve a customized build.
 		 *
-		 * @param string $src Script URL.
+		 * @param string $src Script URL. Defaults to the copy bundled with the plugin.
 		 */
-		$src = apply_filters( 'analyse_snippet_src', self::SDK_SRC );
+		$src = apply_filters( 'analyse_snippet_src', plugins_url( 'assets/analyse.js', ANALYSE_PLUGIN_FILE ) );
 
-		$attributes = ' data-public-key="' . esc_attr( $public_key ) . '"';
+		wp_enqueue_script( self::HANDLE, $src, array(), ANALYSE_PLUGIN_VERSION, false );
+	}
+
+	/**
+	 * Adds the auto-init data attributes and defer to the SDK script tag.
+	 *
+	 * The SDK reads `data-public-key` / `data-host` from its own script tag,
+	 * so no inline configuration script is needed.
+	 *
+	 * @param string $tag    Script tag HTML.
+	 * @param string $handle Script handle.
+	 * @return string
+	 */
+	public function add_data_attributes( $tag, $handle ) {
+		if ( self::HANDLE !== $handle ) {
+			return $tag;
+		}
+
+		$attributes = ' defer data-public-key="' . esc_attr( Analyse_Settings::get( 'public_key' ) ) . '"';
+
+		$pulse_host = Analyse_Settings::get( 'pulse_host' );
 		if ( $pulse_host && Analyse_Settings::DEFAULT_PULSE_HOST !== $pulse_host ) {
 			$attributes .= ' data-host="' . esc_attr( $pulse_host ) . '"';
 		}
 
-		// The SDK auto-initializes from the script tag's data attributes.
-		echo '<script defer src="' . esc_url( $src ) . '"' . $attributes . '></script>' . "\n"; // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+		return str_replace( ' src=', $attributes . ' src=', $tag );
 	}
 
 	/**
