@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<ruleset name="Analyse">
+	<description>Coding standards for the Analyse WordPress plugin.</description>
+
+	<file>.</file>
+	<exclude-pattern>includes/lib/*</exclude-pattern>
+
+	<arg value="ps" />
+	<arg name="extensions" value="php" />
+
+	<rule ref="WordPress-Extra">
+		<!-- Tabs are enforced by WordPress-Core already; nothing to exclude yet. -->
+	</rule>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="analyse" />
+			</property>
+		</properties>
+	</rule>
+
+	<config name="minimum_supported_wp_version" value="5.9" />
+</ruleset>
