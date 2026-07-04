@@ -4,7 +4,7 @@ Tags: analytics, blog, tracking, seo, content
 Requires at least: 5.9
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 0.1.0
+Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -81,6 +81,10 @@ The Analyse SDK is cookieless by default and does not collect personal data unle
 No. Posts created by Analyse are tagged and excluded from sync, so nothing loops.
 
 == Changelog ==
+
+= 1.0.0 =
+* Bundled Analyse SDK 1.0.0 with first/last-touch UTM campaign attribution.
+* Stable 1.0 release.
 
 = 0.1.0 =
 * Initial release: analytics snippet, post sync to Analyse, publish receiver.

@@ -3,7 +3,7 @@
  * Plugin Name:       Analyse
  * Plugin URI:        https://analyse.net/integrations/wordpress
  * Description:       Connect your WordPress site to Analyse — analytics event tracking, blog post sync to Analyse, and auto-publishing of Analyse posts to WordPress.
- * Version:           0.1.0
+ * Version:           1.0.0
  * Requires at least: 5.9
  * Requires PHP:      7.4
  * Author:            Analyse
@@ -20,7 +20,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'ANALYSE_PLUGIN_VERSION', '0.1.0' );
+define( 'ANALYSE_PLUGIN_VERSION', '1.0.0' );
 define( 'ANALYSE_PLUGIN_FILE', __FILE__ );
 define( 'ANALYSE_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 
